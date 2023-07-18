@@ -196,13 +196,13 @@ public class updateBuyer extends javax.swing.JFrame {
         try{
             Connection con=ConnectionProvider.getCon();
             Statement st=con.createStatement();
-            ResultSet rs=st.executeQuery("select *from buyer where contactNo='"+contactNo+"'");
+            ResultSet rs=st.executeQuery("select * from buyer where contactNo='"+contactNo+"'");
             if(rs.next()){
                 jTextField2.setText(rs.getString(1));
-                jTextField3.setText(rs.getString(1));
-                jTextField4.setText(rs.getString(1));
-                jTextField5.setText(rs.getString(1));
-                jTextField6.setText(rs.getString(1));
+                jTextField3.setText(rs.getString(2));
+                jTextField4.setText(rs.getString(3));
+                jTextField5.setText(rs.getString(4));
+                jTextField6.setText(rs.getString(5));
                 jTextField1.setEditable(false);
             }
             else
@@ -222,11 +222,19 @@ public class updateBuyer extends javax.swing.JFrame {
         String email=jTextField4.getText();
         String address=jTextField5.getText();
         String gender=jTextField6.getText();
-        try{
-            Connection con=ConnectionProvider.getCon();
-            Statement st=con.createStatement();
-            st.executeUpdate("update buyer set name='"+name+"',contactNo='"+contactNo+"',email='"+email+"',address='"+address+"',gender='"+gender+"',where contactNo='"+contactNo1+"'");
-            JOptionPane.showMessageDialog(null, "Successfully Updated");
+        try(Connection con=ConnectionProvider.getCon()){
+            //Statement st=con.createStatement();
+            String sql="update buyer set name=?,contactNo=?,email=?,address=?,gender=? where contactNo=?";
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setString(1, name);
+            st.setString(2,contactNo);
+            st.setString(3, email);
+            st.setString(4,address);
+            st.setString(5,gender);
+            st.setString(6,contactNo1);
+            
+            st.executeUpdate();
+            JOptionPane.showMessageDialog(rootPane, "Successfully Updated");
             setVisible(false);
             new updateBuyer().setVisible(true);
         }
